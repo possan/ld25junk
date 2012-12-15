@@ -1,0 +1,112 @@
+<html>
+<head>
+	<title>LD25 #LD48</title>
+	<style>
+		body { background-color: #333; padding: 0; margin: 0;}
+		canvas#a {
+			width: 800px;
+			height: 480px;
+			image-rendering: optimizeSpeed;             // Older versions of FF
+	    image-rendering: -webkit-optimize-contrast; // Webkit
+	    image-rendering: -moz-crisp-edges;          // FF 6.0+
+	                                                //  (Safari now, Chrome soon)
+	    image-rendering: optimize-contrast;         // Possible future browsers.
+	    -ms-interpolation-mode: nearest-neighbor;   // IE
+		}}
+		#fs { position: absolute; right: 10px; top: 10px; }
+	</style>
+
+<script src="voxels/voxel.js"></script>
+<script src="game/kart.js"></script>
+<script src="game/engine.js"></script>
+<script src="game/keyboard.js"></script>
+
+<script src="game/deer.js"></script>
+<script src="game/santa.js"></script>
+<script src="game/player.js"></script>
+<script src="game/missile.js"></script>
+
+<script src="game/game.js"></script>
+
+<script>
+
+
+
+	var kart = new KartRenderer();
+	kart.width = 400;
+	kart.height = 240;
+
+	var img1 = new Image();
+	img1.setAttribute('src', 'game/texture2.jpg');
+	img1.addEventListener('load', function() {
+		var texturecanvas = document.createElement('canvas');
+		texturecanvas.setAttribute('width', 256);
+		texturecanvas.setAttribute('height', 256);
+		var texturecontext = texturecanvas.getContext('2d');
+		texturecontext.drawImage(img1, 0, 0);
+		kart.setFloor(texturecontext);
+	});
+
+	function init() {
+		var ael = document.getElementById('a');
+		var actx = ael.getContext('2d');
+
+		var voxler = new VoxelRenderer();
+
+		var keyboard = new Keyboard();
+		keyboard.onchange = function() {
+			console.log('keystate changed', keyboard.down);
+			if (engine.keyboard.isDown(13)) {
+				// fullscreen
+				fs();
+			}
+		};
+		keyboard.start();
+
+		var engine = new Engine();
+		engine.floor = kart;
+
+		engine.registerModel('santa', voxler.loadModel('voxels/santa.gif', 7, 10, 3, 10));
+		engine.registerModel('reindeer', voxler.loadModel('voxels/reindeer.gif', 10, 8, 3, 7));
+		engine.registerModel('missile', voxler.loadModel('voxels/missile.gif', 8, 3, 3, 1));
+
+		engine.voxelRenderer = voxler;
+		engine.keyboard = keyboard;
+
+		var game = new Game(engine);
+
+		game.reset();
+		game.start();
+
+		function update() {
+			if (engine.keyboard.wasPressed('f') ||
+				engine.keyboard.wasPressed(13)) {
+				// fullscreen
+			}
+			actx.fillStyle = '#000';
+			actx.fillRect(0, 0, 400, 240);
+			kart.render(actx);
+			game.step(1.0 / 60.0);
+			engine.render(actx);
+
+			window.requestAnimationFrame(update);
+		}
+
+		window.requestAnimationFrame(update);
+	}
+
+		function fs(){
+			console.log('fullscreen');
+			var el = document.getElementById('a'),
+					rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen;
+	    rfs.call(el);
+		}
+	
+</script>
+
+</head>
+<body onload="init()">
+	<canvas id="a" width="400" height="240"></canvas>
+	<input type="button" onclick="fs();" id="fs" value="Fullscreen"></input>
+</body>
+</html>

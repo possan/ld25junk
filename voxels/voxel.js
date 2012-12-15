@@ -228,7 +228,7 @@
 
 	VoxelRenderer.prototype.model = function(ctx, x, y, r, rot, model) {
 		for (var row=0; row<model.height; row++) {
-			this.modelRow(ctx, x, y + r * 2 * (row - model.height/2), r, rot, model, row);
+			this.modelRow(ctx, x, y + r * 2 * (row - model.base + 0.5), r, rot, model, row);
 		}
 	}
 
