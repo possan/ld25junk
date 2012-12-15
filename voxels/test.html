@@ -15,40 +15,43 @@
 
 		var t = 0;
 
-		var model = {
-			width: 3,
+		var model = voxler.loadModel('santa.gif', 7, 10, 3, 10); /* {
+			width: 5,
 			height: 3,
 			depth: 3,
 			colors: [
 				// [
-				'#fff', '',     '#333',
-				'#888', '',     '#f0f',
-				'#f00', '',     '#f0f',
+				'#fed', '',     '', '', '',
+				'#886', '',     '','', '',
+				'#c00', '',     '#c0a','#c0b', '#c0c',
 				// ],
 				// [
-				'#fff', '#888', '#0ff',
-				'',     '',     '',
-				'#f00', '#ff0', '#f0f',
+				'#fca', '', 		'','', '',
+				'',     '',     '','', '',
+				'#a00', '#fc0', '#c0f','', '',
 				// ],
 				// [
-				'#888', '',     '#0ff',
-				'#555', '',     '#fff',
-				'#555', '',     '#f0f',
+				'#898', '',     '#0cf','', '',
+				'#535', '',     '#fec','', '',
+				'#557', '',     '#a0f','', '',
 				// ],
 			]
-		}
+		} */
 
 		function update() {
 
 			actx.fillStyle = '#000';
-			actx.fillRect(0,0, 800,500);
+			actx.fillRect(0, 0, 800, 500);
 
+			/*
 			voxler.box(actx, 100, 100, 50 + 20 * Math.sin(t*2), rot*3, voxler.colorscale('#f00'));
 			voxler.box(actx, 250, 100, 2, -rot*1, voxler.colorscale('#ff0'));
+
 			voxler.box(actx, 100, 250, 50 - 30 * Math.cos(t*3), rot*2, voxler.colorscale('#c85'));
 			voxler.box(actx, 250, 200, 10, rot*1, voxler.colorscale('#d3f'));
+			*/
 
-			voxler.model(actx, 600, 250, 30 + 10 * Math.sin(t), rot, model);
+			voxler.model(actx, 600, 250, 25 + 5 * Math.sin(t), rot, model);
 
 			rot += 1;
 			t += 1.0 / 60.0;

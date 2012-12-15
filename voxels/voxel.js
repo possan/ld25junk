@@ -43,7 +43,13 @@
 		return '#'+rh+gh+bh;
 	}
 
+	var _colorscalecache = {};
+
 	VoxelRenderer.prototype.colorscale = function(hex) {
+
+		if (typeof(_colorscalecache[hex]) !== 'undefined')
+			return _colorscalecache[hex];
+
 		var base = this.colorFromHex(hex);
 		var brighter = {
 			r: base.r + 0x33,
@@ -55,11 +61,16 @@
 			g: base.g - 0x33,
 			b: base.b - 0x33
 		};
-		return [
+
+		var ret = [
 			this.colorToHex(brighter),
 			this.colorToHex(base),
 			this.colorToHex(darker),
 		];
+
+		_colorscalecache[hex] = ret;
+
+		return ret;
 	}
 
 	VoxelRenderer.prototype._boxcoords = function(rot) {
@@ -115,6 +126,52 @@
 		}
 	}
 
+	VoxelRenderer.prototype.loadModel = function(imagefile, width, height, depth, base) {
+		var model = {
+			width: width,
+			height: height,
+			depth: depth,
+			base: base,
+			colors: []
+		};
+		for (var i=0; i<width*height*depth; i++)
+			model.colors.push('');
+
+		// load async..
+		var self = this;
+		console.log('loading', imagefile);
+		var img = new Image();
+		img.setAttribute('src', imagefile);
+		img.addEventListener('load', function() {
+			console.log('image loaded...', this);
+			var can = document.createElement('canvas');
+			can.width = width;
+			can.height = height * depth;
+			document.body.appendChild(can);
+			var ctx = can.getContext('2d');
+			ctx.drawImage(img, 0, 0);
+			var data = ctx.getImageData(0, 0, width, height*depth);
+			console.log(data);
+			for (var z=0; z<depth; z++) {
+				for (var y=0; y<height; y++) {
+					for (var x=0; x<width; x++) {
+						var datao = (x + y*width + z*height*width) * 4;
+						var incolor = { r: data.data[datao+0], g: data.data[datao+1], b: data.data[datao+2] };
+						var coloro = x + y*width + z * width*height;
+						var outcolor = self.colorToHex(incolor);
+						if (outcolor != '#f0f')
+							model.colors[coloro] = outcolor;
+					}
+				}
+			}
+		});
+
+		return model;
+	}
+
+	VoxelRenderer.prototype._depthSort = function(items, camera) {
+	}
+
 	VoxelRenderer.prototype._sortModel = function(model, rot) {
 	}
 
@@ -128,7 +185,7 @@
 
 	VoxelRenderer.prototype._innerModelRow = function(ctx, x, y, r, rot, model, row, column, depth) {
 		var o = (column) + (row * model.width) + (depth * model.width * model.height);
-		if (model.colors[o] == '')
+		if (o < 0 || o >= model.colors.length || model.colors[o] == '')
 			return;
 		var a = rot;
 		var a2 = rot + 90;
