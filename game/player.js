@@ -6,10 +6,10 @@
 	}
 
 	PlayerController.prototype.reset = function(state) {
+		state.object.modelName = 'missile';
 	}
 
 	PlayerController.prototype.start = function(state) {
-		state.object.modelName = 'missile';
 		state.object.position.x = 0 + Math.random() * 800;
 		state.object.position.y = 0 + Math.random() * 600;
 	}
@@ -43,13 +43,35 @@
 			// create missile and throw it away
 			console.log('fire!');
 			var miss = engine.createObjectWithType('missile', new MissileController());
-			miss.position.x = state.object.position.x;
-			miss.position.y = state.object.position.y;
+			miss.position.x = state.object.position.x + dx*3;
+			miss.position.y = state.object.position.y + dy*3;
 			miss.position.z = 30;
 			miss.controller.direction = this.direction;
 			miss.drag = 0;
 			miss.velocity.x = dx * 18;
 			miss.velocity.y = dy * 18;
+		}
+
+		if (kb.wasPressed(69)) {
+			// E - spawn explosion
+			console.log('explision!');
+			for (var i=0; i<5; i++) {
+				var miss = engine.createObjectWithType('explosion', new ExplosionController());
+				miss.position.x = state.object.position.x + dx*100;
+				miss.position.y = state.object.position.y + dy*100;
+				miss.position.z = 30;
+			}
+		}
+
+		if (kb.wasPressed(66)) {
+			// B - spawn bloodspatter
+			console.log('blood!');
+			for (var i=0; i<30; i++) {
+				var miss = engine.createObjectWithType('blood', new BloodController());
+				miss.position.x = state.object.position.x + dx*100;
+				miss.position.y = state.object.position.y + dy*100;
+				miss.position.z = 30;
+			}
 		}
 
 		engine.camera.direction = -this.direction + 90;

@@ -158,9 +158,11 @@
 						var datao = (x + y*width + z*height*width) * 4;
 						var incolor = { r: data.data[datao+0], g: data.data[datao+1], b: data.data[datao+2] };
 						var coloro = x + y*width + z * width*height;
-						var outcolor = self.colorToHex(incolor);
-						if (outcolor != '#f0f')
+						if (incolor.r > 250 && incolor.g < 5 && incolor.b > 250) {
+						} else {
+							var outcolor = self.colorToHex(incolor);
 							model.colors[coloro] = outcolor;
+						}
 					}
 				}
 			}

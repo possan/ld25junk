@@ -9,13 +9,14 @@
 		this.player = this.engine.createObjectWithType('player', new PlayerController());
 		this.santa = this.engine.createObjectWithType('santa', new SantaController());
 		this.deers = [
-/*			this.engine.createObjectWithType('deer', new DeerController()),
+			/*
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController()),
-	*/
+			this.engine.createObjectWithType('deer', new DeerController()),
+			*/
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController()),
 			this.engine.createObjectWithType('deer', new DeerController())

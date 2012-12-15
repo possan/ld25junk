@@ -6,6 +6,7 @@
 		this.camera = { x: 0, y: 0, z: 0, direction: 0 }
 		this.modelCache = {};
 		this.voxelRenderer = null;
+		this.gravity = 10;
 		this.time = 0;
 		this.keyboard = null;
 	};
@@ -94,13 +95,41 @@
 	};
 
 	Engine.prototype.step = function(deltatime) {
+
 		this.time += deltatime;
+
 		this.keyboard.step();
+
 		for (var i=0; i<this.objects.length; i++) {
 			var o = this.objects[i];
 			if (!o.active)
 				continue;
 			o.step(this, deltatime);
+		}
+
+		for (var i=0; i<this.objects.length; i++) {
+			var o = this.objects[i];
+			if (!o.active)
+				continue;
+			if (!o.canBeHit)
+				continue;
+			for (var i2=0; i2<this.objects.length; i2++) {
+				var o2 = this.objects[i2];
+				if (!o2.active)
+					continue;
+				if (!o2.canHitOther)
+					continue;
+				var dx = o2.position.x - o.position.x;
+				var dy = o2.position.y - o.position.y;
+				var d = Math.sqrt(dx*dx + dy*dy);
+				if (d > (o.boundingRadius + o2.boundingRadius))
+					continue;
+				var att = {
+					attacker: o2,
+					distance: d
+				};
+				o.hit(this, o2);
+			}
 		}
 	};
 
@@ -111,29 +140,18 @@
 				continue;
 
 			// project!
-			if (this.floor) {
-				var sp = this.floor.project(o.position.x, 0, o.position.y);
-				if (sp.visible)
-					this.voxelRenderer.model(
-						context,
-						sp.x,
-						sp.y,
-						4 * sp.scale,
-						(o.modelRotation || 0)- -this.floor.player.direction,
-						this.modelCache[o.modelName]
-					);
-			} else {
-				/*
-				this.voxelRenderer.model(
-					context,
-					o.position.x,
-					o.position.y,
-					6 * o.scale,
-					o.modelRotation,
-					this.modelCache[o.modelName]
-				);
-				*/
-			}
+			var sp = this.floor.project(o.position.x, -o.position.z, o.position.y);
+			if (!sp.visible)
+				continue;
+
+			this.voxelRenderer.model(
+				context,
+				sp.x,
+				sp.y,
+				4 * sp.scale * o.scale,
+				(o.modelRotation || 0)- -this.floor.player.direction,
+				this.modelCache[o.modelName]
+			);
 		}
 	};
 
@@ -150,13 +168,19 @@
 		this.position = { x: 0, y: 0, z: 0 };
 		this.velocity = { x: 0, y: 0, z: 0 };
 		this.mass = 1;
-		this.drag = 0.1;
+		this.bounce = 0;
+		this.drag = 0.05;
 		this.scale = 1.0;
 		this._renderindex = -1;
 		this.direction = 0;
+		this.canHitOther = false;
+		this.canBeHit = false;
+		this.boundingRadius = 10;
+		this.timer = 0;
 	}
 
 	EngineObject.prototype.reset = function(engine) {
+		this.timer = 0;
 		if (this.controller) this.controller.reset({
 			engine: engine,
 			object: this
@@ -164,6 +188,7 @@
 	}
 
 	EngineObject.prototype.step = function(engine, dt) {
+		this.timer += dt;
 		if (this.controller) this.controller.step({
 			engine: engine,
 			object: this,
@@ -177,9 +202,16 @@
 		this.velocity.x *= 1 - this.drag;
 		this.velocity.y *= 1 - this.drag;
 		this.velocity.z *= 1 - this.drag;
+		this.velocity.z -= engine.gravity * this.drag;
+		if (this.position.z <= 0) {
+			// bounce?
+			this.position.z = -this.position.z * this.bounce;
+			this.velocity.z = Math.abs(this.velocity.z) * this.bounce;
+		}
 	}
 
 	EngineObject.prototype.start = function(engine) {
+		this.timer = 0;
 		if (this.controller) this.controller.start({
 			engine: engine,
 			object: this
@@ -191,6 +223,7 @@
 			engine: engine,
 			attacker: other,
 			attackee: this,
+			target: this,
 			object: this
 		});
 	}

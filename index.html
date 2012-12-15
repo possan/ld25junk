@@ -25,6 +25,8 @@
 <script src="game/santa.js"></script>
 <script src="game/player.js"></script>
 <script src="game/missile.js"></script>
+<script src="game/blood.js"></script>
+<script src="game/explosion.js"></script>
 
 <script src="game/game.js"></script>
 
@@ -68,7 +70,18 @@
 
 		engine.registerModel('santa', voxler.loadModel('voxels/santa.gif', 7, 10, 3, 10));
 		engine.registerModel('reindeer', voxler.loadModel('voxels/reindeer.gif', 10, 8, 3, 7));
-		engine.registerModel('missile', voxler.loadModel('voxels/missile.gif', 8, 3, 3, 1));
+		engine.registerModel('missile', voxler.loadModel('voxels/missile.gif', 8, 3, 3, 1.5));
+
+		engine.registerModel('explosion-frame0', voxler.loadModel('voxels/explosion-frame0.png', 5, 5, 5, 2.5));
+		engine.registerModel('explosion-frame1', voxler.loadModel('voxels/explosion-frame1.png', 5, 5, 5, 2.5));
+		engine.registerModel('explosion-frame2', voxler.loadModel('voxels/explosion-frame2.png', 5, 5, 5, 2.5));
+		engine.registerModel('explosion-frame3', voxler.loadModel('voxels/explosion-frame3.png', 5, 5, 5, 2.5));
+		engine.registerModel('explosion-frame4', voxler.loadModel('voxels/explosion-frame4.png', 5, 5, 5, 2.5));
+
+		engine.registerModel('blood1', voxler.loadModel('voxels/blood1.png', 2, 2, 2, 1));
+		engine.registerModel('blood2', voxler.loadModel('voxels/blood2.png', 2, 2, 2, 1));
+		engine.registerModel('blood3', voxler.loadModel('voxels/blood3.png', 2, 2, 2, 1));
+		engine.registerModel('blood4', voxler.loadModel('voxels/blood4.png', 2, 2, 2, 1));
 
 		engine.voxelRenderer = voxler;
 		engine.keyboard = keyboard;
@@ -86,22 +99,25 @@
 			actx.fillStyle = '#000';
 			actx.fillRect(0, 0, 400, 240);
 			kart.render(actx);
-			game.step(1.0 / 60.0);
+			game.step(1.0 / 30.0);
 			engine.render(actx);
 
-			window.requestAnimationFrame(update);
+//			window.requestAnimationFrame(update);
 		}
 
-		window.requestAnimationFrame(update);
+	//	window.requestAnimationFrame(update);
+		setInterval(function(){
+			update();
+		}, 1000.0/30.0);
 	}
 
-		function fs(){
-			console.log('fullscreen');
-			var el = document.getElementById('a'),
-					rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen;
-	    rfs.call(el);
-		}
-	
+	function fs(){
+		console.log('fullscreen');
+		var el = document.getElementById('a'),
+				rfs = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen;
+    rfs.call(el);
+	}
+
 </script>
 
 </head>
