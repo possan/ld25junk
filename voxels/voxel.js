@@ -147,7 +147,7 @@
 			var can = document.createElement('canvas');
 			can.width = width;
 			can.height = height * depth;
-			document.body.appendChild(can);
+			// document.body.appendChild(can);
 			var ctx = can.getContext('2d');
 			ctx.drawImage(img, 0, 0);
 			var data = ctx.getImageData(0, 0, width, height*depth);
