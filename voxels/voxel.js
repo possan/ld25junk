@@ -197,6 +197,8 @@
 
 	VoxelRenderer.prototype.modelRow = function(ctx, x, y, r, rot, model, row) {
 
+		while (rot < 0)
+			rot += 360;
 		rot %= 360;
 
 		var xorder = (rot >= 180) ? -1 : 1;

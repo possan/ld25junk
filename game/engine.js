@@ -149,7 +149,7 @@
 				sp.x,
 				sp.y,
 				4 * sp.scale * o.scale,
-				(o.modelRotation || 0)- -this.floor.player.direction,
+				(o.direction || 0)- -this.floor.player.direction,
 				this.modelCache[o.modelName]
 			);
 		}
@@ -164,15 +164,15 @@
 		this.controller = null;
 		this.modelName = '';
 		this.modelFrame = 0;
-		this.modelRotation = 0;
 		this.position = { x: 0, y: 0, z: 0 };
 		this.velocity = { x: 0, y: 0, z: 0 };
+		this.direction = 0;
+		this.angularVelocity = 0;
 		this.mass = 1;
 		this.bounce = 0;
 		this.drag = 0.05;
 		this.scale = 1.0;
 		this._renderindex = -1;
-		this.direction = 0;
 		this.canHitOther = false;
 		this.canBeHit = false;
 		this.boundingRadius = 10;
@@ -196,12 +196,14 @@
 			delta: dt
 		});
 		// simple physics
+		this.direction += this.angularVelocity / this.mass;
+		this.angularVelocity *= 1.0 - this.drag;
 		this.position.x += this.velocity.x / this.mass;
 		this.position.y += this.velocity.y / this.mass;
 		this.position.z += this.velocity.z / this.mass;
-		this.velocity.x *= 1 - this.drag;
-		this.velocity.y *= 1 - this.drag;
-		this.velocity.z *= 1 - this.drag;
+		this.velocity.x *= 1.0 - this.drag;
+		this.velocity.y *= 1.0 - this.drag;
+		this.velocity.z *= 1.0 - this.drag;
 		this.velocity.z -= engine.gravity * this.drag;
 		if (this.position.z <= 0) {
 			// bounce?

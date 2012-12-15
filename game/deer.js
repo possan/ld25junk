@@ -11,13 +11,12 @@
 	}
 
 	DeerController.prototype.start = function(state) {
-		state.object.position.x = 0 + Math.random() * 256;
-		state.object.position.y = 0 + Math.random() * 256;
-		this.direction = Math.random() * 360;
+		state.object.position.x = 0 + Math.random() * 2560;
+		state.object.position.y = 0 + Math.random() * 2560;
+		state.object.direction = Math.random() * 360;
 	}
 
 	DeerController.prototype.step = function(state) {
-		state.object.modelRotation = this.direction;
 		state.object.velocity.x = 0.5 * Math.cos(this.direction * Math.PI / 180.0);
 		state.object.velocity.y = 0.5 * Math.sin(this.direction * Math.PI / 180.0);
 	}
@@ -26,7 +25,7 @@
 		// hit by missile
 		state.target.active = false;
 		state.attacker.active = false;
-		for (var i=0; i<30; i++) {
+		for (var i=0; i<40; i++) {
 			var miss = state.engine.createObjectWithType('blood', new BloodController());
 			miss.position.x = state.object.position.x;
 			miss.position.y = state.object.position.y;
