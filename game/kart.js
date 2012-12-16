@@ -4,7 +4,7 @@
 		this.player = { x: 64, y: 64, direction: 0 };
 		this.width = 320;
 		this.height = 240;
-		this.every = 3;
+		this.every = 1;
 		// this.fov = 90;
 		this.fog = 0.5;
 		this.texturepixels = [];
@@ -98,7 +98,7 @@
  			target.data[o+1] = (this.texturepixels[o2+1] * bri) >> 8;
  			target.data[o+2] = (this.texturepixels[o2+2] * bri) >> 8;
  			target.data[o+3] = 255;
- 			for (var j=0; j<this.every; j++) {
+ 			for (var j=1; j<this.every; j++) {
  				var o3 = o + stride * j;
 	 			target.data[o3+0] = target.data[o+0];
 	 			target.data[o3+1] = target.data[o+1];

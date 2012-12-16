@@ -48,8 +48,8 @@
 			miss.position.z = 30;
 			miss.direction = this.direction;
 			miss.drag = 0;
-			miss.velocity.x = dx * 18;
-			miss.velocity.y = dy * 18;
+			miss.velocity.x = dx * 100;
+			miss.velocity.y = dy * 100;
 		}
 
 		if (kb.wasPressed(69)) {
