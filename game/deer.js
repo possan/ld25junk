@@ -17,8 +17,8 @@
 	}
 
 	DeerController.prototype.step = function(state) {
-		state.object.velocity.x = 0.5 * Math.cos(this.direction * Math.PI / 180.0);
-		state.object.velocity.y = 0.5 * Math.sin(this.direction * Math.PI / 180.0);
+		state.object.velocity.x = 5.5 * Math.cos(this.direction * Math.PI / 180.0);
+		state.object.velocity.y = 5.5 * Math.sin(this.direction * Math.PI / 180.0);
 	}
 
 	DeerController.prototype.hit = function(state) {
