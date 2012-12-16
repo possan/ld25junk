@@ -28,7 +28,7 @@
 			miss.position.z = state.object.position.z;
 		}
 		for (var i=0; i<30; i++) {
-			var miss = engine.createObjectWithType('blood', new BloodController());
+			var miss = state.engine.createObjectWithType('blood', new BloodController());
 			miss.position.x = state.object.position.x;
 			miss.position.y = state.object.position.y;
 			miss.position.z = state.object.position.z;

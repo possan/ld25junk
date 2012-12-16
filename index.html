@@ -2,10 +2,10 @@
 <head>
 	<title>LD25 #LD48</title>
 	<style>
-		body { background-color: #333; padding: 0; margin: 0;}
+		body { background-color: #123; padding: 0; margin: 0;}
 		canvas#a {
-			width: 800px;
-			height: 480px;
+			width: 100%;
+			height: 100%;
 			image-rendering: optimizeSpeed;             // Older versions of FF
 	    image-rendering: -webkit-optimize-contrast; // Webkit
 	    image-rendering: -moz-crisp-edges;          // FF 6.0+
@@ -32,23 +32,6 @@
 
 <script>
 
-
-
-	var kart = new KartRenderer();
-	kart.width = 400;
-	kart.height = 240;
-
-	var img1 = new Image();
-	img1.setAttribute('src', 'game/texture2.jpg');
-	img1.addEventListener('load', function() {
-		var texturecanvas = document.createElement('canvas');
-		texturecanvas.setAttribute('width', 256);
-		texturecanvas.setAttribute('height', 256);
-		var texturecontext = texturecanvas.getContext('2d');
-		texturecontext.drawImage(img1, 0, 0);
-		kart.setFloor(texturecontext);
-	});
-
 	function init() {
 		var ael = document.getElementById('a');
 		var actx = ael.getContext('2d');
@@ -66,6 +49,20 @@
 		keyboard.start();
 
 		var engine = new Engine();
+
+		var kart = new KartRenderer();
+		kart.width = 400;
+		kart.height = 200;
+		var img1 = new Image();
+		img1.setAttribute('src', 'game/texture2.jpg');
+		img1.addEventListener('load', function() {
+			var texturecanvas = document.createElement('canvas');
+			texturecanvas.setAttribute('width', 256);
+			texturecanvas.setAttribute('height', 256);
+			var texturecontext = texturecanvas.getContext('2d');
+			texturecontext.drawImage(img1, 0, 0);
+			kart.setFloor(texturecontext);
+		});
 		engine.floor = kart;
 
 		engine.registerModel('santa', voxler.loadModel('voxels/santa.gif', 7, 10, 3, 10));
@@ -91,20 +88,30 @@
 		game.reset();
 		game.start();
 
+		var die = false;
+
 		function update() {
 			if (engine.keyboard.wasPressed('f') ||
 				engine.keyboard.wasPressed(13)) {
 				// fullscreen
 			}
+			if (engine.keyboard.wasPressed(27)) {
+				// fullscreen
+				die = true;
+			}
 			actx.fillStyle = '#000';
-			actx.fillRect(0, 0, 400, 240);
-			kart.render(actx);
+			actx.fillRect(0, 0, 400, 200);
 			game.step(1.0 / 30.0);
 			engine.render(actx);
 			// window.requestAnimationFrame(update);
+			if (die)
+				return;
+			setTimeout(function() {
+				update();
+			}, 1000.0/30.0);
 		}
 		// window.requestAnimationFrame(update);
-		setInterval(function(){
+		setTimeout(function() {
 			update();
 		}, 1000.0/30.0);
 	}
@@ -120,7 +127,7 @@
 
 </head>
 <body onload="init()">
-	<canvas id="a" width="400" height="240"></canvas>
+	<canvas id="a" width="400" height="200"></canvas>
 	<input type="button" onclick="fs();" id="fs" value="Fullscreen"></input>
 </body>
 </html>

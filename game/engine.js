@@ -134,6 +134,7 @@
 	};
 
 	Engine.prototype.render = function(context) {
+		this.floor.render(context);
 		for (var i=0; i<this.objects.length; i++) {
 			var o = this.objects[i];
 			if (!o.active)
@@ -149,7 +150,7 @@
 				sp.x,
 				sp.y,
 				4 * sp.scale * o.scale,
-				(o.direction || 0)- -this.floor.player.direction,
+				(o.direction || 0) + this.floor.player.direction,
 				this.modelCache[o.modelName]
 			);
 		}
@@ -175,7 +176,7 @@
 		this._renderindex = -1;
 		this.canHitOther = false;
 		this.canBeHit = false;
-		this.boundingRadius = 10;
+		this.boundingRadius = 20;
 		this.timer = 0;
 	}
 

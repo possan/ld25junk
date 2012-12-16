@@ -17,7 +17,7 @@
 	}
 
 	MissileController.prototype.step = function(state) {
-		if (state.object.timer > 2) {
+		if (state.object.timer > 5) {
 			state.object.active = false;
 		}
 	}

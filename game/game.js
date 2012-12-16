@@ -30,13 +30,7 @@
 	}
 
 	Game.prototype.step = function(time) {
-		// prepare object animations
-
-		// check collisions etc...
-
 		this.engine.step(time);
-
-		// update camera
 		this.engine.floor.player = this.engine.camera;
 	}
 

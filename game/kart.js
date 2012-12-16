@@ -4,6 +4,7 @@
 		this.player = { x: 64, y: 64, direction: 0 };
 		this.width = 320;
 		this.height = 240;
+		this.every = 3;
 		// this.fov = 90;
 		this.fog = 0.5;
 		this.texturepixels = [];
@@ -88,14 +89,24 @@
 		var ud = (u1 - u0) / width;
 		var vd = (v1 - v0) / width;
 		var i = width;
+		var stride = width * 4;
 		while(i--) {
-			var uc = (Math.floor(u) + 512) % 256;
-			var vc = (Math.floor(v) + 512) % 256;
+			var uc = (Math.floor(u) + 512*16) % 256;
+			var vc = (Math.floor(v) + 512*16) % 256;
 			var o2 = ((vc * 256)+uc) * 4;
- 			target.data[o++] = (this.texturepixels[o2++] * bri) >> 8;
- 			target.data[o++] = (this.texturepixels[o2++] * bri) >> 8;
- 			target.data[o++] = (this.texturepixels[o2++] * bri) >> 8;
- 			target.data[o++] = 255;
+ 			target.data[o+0] = (this.texturepixels[o2+0] * bri) >> 8;
+ 			target.data[o+1] = (this.texturepixels[o2+1] * bri) >> 8;
+ 			target.data[o+2] = (this.texturepixels[o2+2] * bri) >> 8;
+ 			target.data[o+3] = 255;
+ 			for (var j=0; j<this.every; j++) {
+ 				var o3 = o + stride * j;
+	 			target.data[o3+0] = target.data[o+0];
+	 			target.data[o3+1] = target.data[o+1];
+	 			target.data[o3+2] = target.data[o+2];
+	 			target.data[o3+3] = target.data[o+3];
+ 			}
+ 			o += 4;
+ 			o2 += 4;
  			u += ud;
  			v += vd;
  		}
@@ -120,7 +131,7 @@
 	KartRenderer.prototype.render = function(context) {
 		var data = context.getImageData(0,0,this.width,this.height);
 		var lines = this.height / 2;
-		for (var i=0; i<lines; i++) {
+		for (var i=0; i<lines; i+=this.every) {
 			var bri = 255 - 255 * i * this.fog / lines;
 			var y = this.height - i;
 			var uvc = this._planeuv(0, lines-i, -this.height / 2, this.player.z);

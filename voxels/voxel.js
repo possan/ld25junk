@@ -82,7 +82,7 @@
 			var a = (i * 90 + -rot - 45) % 360;
 			var x = radii * Math.sin(a * Math.PI / 180.0);
 			// console.log('a=' + a+', x='+x);
-			lefts.push(Math.round(x));
+			lefts.push(x);
 		}
 		// console.log(lefts);
 		for (var s=0; s<4; s++) {
@@ -126,6 +126,49 @@
 		}
 	}
 
+	VoxelRenderer.prototype.preRenderModel = function(model) {
+
+		var pre = {}
+		pre.angles = 32;
+		pre.columns = 8;
+		pre.widthdepth = Math.max(model.width, model.depth) + 2;
+		pre.blockSize = 10;
+		pre.rows = Math.ceil(pre.angles / pre.columns);
+		pre.frameWidth = pre.blockSize * pre.widthdepth;
+		pre.frameHeight = pre.blockSize * model.height * 2;
+		pre.sheetWidth = pre.columns * pre.frameWidth;
+		pre.sheetHeight = pre.rows * pre.frameHeight;
+
+		console.log('prerendering voxel', pre);
+
+		var con = document.createElement('canvas');
+		con.width = pre.sheetWidth;
+		con.height = pre.sheetHeight;
+
+		var ctx = con.getContext('2d');
+		// ctx.fillStyle = '#00000000';
+		ctx.clearRect(0, 0, con.width, con.height);
+
+		for (var a=0; a<pre.angles; a++) {
+			var bx = (a % pre.columns) * pre.frameWidth;
+			var by = Math.floor(a / pre.columns) * pre.frameHeight;
+			var ang = a * 360 / pre.angles;
+			// ctx.fillStyle = '#0f0';
+			// ctx.fillRect(bx, by, 1, 1);
+			// ctx.fillRect(bx+pre.frameWidth-1, by+pre.frameHeight-1, 1, 1);
+			// ctx.fillStyle = '#f0f';
+			// ctx.fillRect(bx+pre.frameWidth-1, by, 1, 1);
+			// ctx.fillRect(bx, by+pre.frameHeight-1, 1, 1);
+			this.model(ctx, bx+pre.frameWidth/2, by+pre.frameHeight/2, pre.blockSize/2, ang, model);
+		}
+
+		// document.body.appendChild(con);
+
+		pre.canvas = con;
+		pre.context = ctx;
+		model.prerender = pre;
+	}
+
 	VoxelRenderer.prototype.loadModel = function(imagefile, width, height, depth, base) {
 		var model = {
 			width: width,
@@ -166,6 +209,7 @@
 					}
 				}
 			}
+			self.preRenderModel(model);
 		});
 
 		return model;
@@ -230,9 +274,40 @@
 		}
 	}
 
-	VoxelRenderer.prototype.model = function(ctx, x, y, r, rot, model) {
+	VoxelRenderer.prototype._renderModel = function(ctx, x, y, r, rot, model) {
 		for (var row=0; row<model.height; row++) {
 			this.modelRow(ctx, x, y + r * 2 * (row - model.base + 0.5), r, rot, model, row);
+		}
+	}
+
+	VoxelRenderer.prototype._renderPrerenderedModel = function(ctx, x, y, r, rot, model) {
+		while (rot < 0)
+			rot += 360;
+		rot %= 360;
+		var pre = model.prerender;
+		var frame = Math.round(rot * pre.angles / 360);
+		// frame = 0;
+		var col = frame % pre.columns;
+		var row = Math.floor(frame / pre.columns);
+		var sc = pre.widthdepth * pre.blockSize * r / 5;
+		var a = pre.frameHeight / pre.frameWidth;
+		ctx.drawImage(
+			pre.canvas,
+			col * pre.frameWidth,
+			row * pre.frameHeight,
+			pre.frameWidth,
+			pre.frameHeight,
+			x-sc,
+			y-sc*a,
+			sc*2,
+			sc*2*a);
+	}
+
+	VoxelRenderer.prototype.model = function(ctx, x, y, r, rot, model) {
+		if (model.prerender) {
+			this._renderPrerenderedModel(ctx, x, y, r, rot, model);
+		} else {
+			this._renderModel(ctx, x, y, r, rot, model);
 		}
 	}
 
